@@ -169,8 +169,9 @@ def anime(update: Update, context: CallbackContext):
             site = trailer.get('site', None)
             if site == "youtube": trailer = 'https://youtu.be/' + trailer_id
         description = json.get('description', 'N/A').replace('<i>', '').replace('</i>', '').replace('<br>', '')
-        msg += shorten(description, info) 
+        msg += shorten(description, info)
         image = json.get('bannerImage', None)
+        title_img = f"https://img.anili.st/media/{json.get('id')}"
         if trailer:
             buttons = [
                 [InlineKeyboardButton("More Info", url=info),
@@ -180,13 +181,11 @@ def anime(update: Update, context: CallbackContext):
             buttons = [
                 [InlineKeyboardButton("More Info", url=info)]
             ]
-        if image:
-            try:
-                update.effective_message.reply_photo(photo = image, caption = msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
-            except:
+        try:
+            update.effective_message.reply_photo(photo = title_img, caption = msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
+        except:
+            if image:
                 msg += f" [〽️]({image})"
-                update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
-        else: 
             update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
 
 def character(update: Update, _):
