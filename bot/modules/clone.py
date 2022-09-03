@@ -197,6 +197,34 @@ def _clone(message, bot):
             msg = sendMessage(f"Cloning: <code>{link}</code>", bot, message)
             result, button = gd.clone(link)
             deleteMessage(bot, msg)
+            if BOT_PM and FORCE_BOT_PM:
+                if message.chat.type != 'private':
+                    if EMOJI_THEME is True:
+                        msg = f"<b>🗂️ Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
+                    else:
+                        msg = f"<b>Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
+                    botpm = f"\n\n<b>Hey {tag}!, I have sent your cloned links in PM.</b>\n"
+                    buttons = ButtonMaker()
+                    b_uname = bot.get_me().username
+                    botstart = f"http://t.me/{b_uname}"
+                    buttons.buildbutton("View links in PM", f"{botstart}")
+                    if PICS:
+                        sendPhoto(msg + botpm, bot, message, random.choice(PICS), InlineKeyboardMarkup(buttons.build_menu(2)))
+                    else:
+                        sendMarkup(msg + botpm, bot, message, InlineKeyboardMarkup(buttons.build_menu(2)))
+                else:
+                    if EMOJI_THEME is True:
+                        cc = f'\n<b>╰👤 #Clone_By: </b>{tag}\n\n'
+                    else:
+                        cc = f'\n<b>╰ #Clone_By: </b>{tag}\n\n'
+                    if PICS:
+                        sendPhoto(result + cc, bot, message, random.choice(PICS), button)
+                    else:
+                        sendMarkup(result + cc, bot, message, button)
+                message.delete()
+                reply_to = message.reply_to_message
+                if reply_to is not None and AUTO_DELETE_UPLOAD_MESSAGE_DURATION == -1:
+                    reply_to.delete()
         else:
             drive = GoogleDriveHelper(name)
             gid = ''.join(SystemRandom().choices(ascii_letters + digits, k=12))
@@ -213,6 +241,34 @@ def _clone(message, bot):
                     Interval[0].cancel()
                     del Interval[0]
                     delete_all_messages()
+                    if BOT_PM and FORCE_BOT_PM:
+                        if message.chat.type != 'private':
+                            if EMOJI_THEME is True:
+                                msg = f"<b>🗂️ Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
+                            else:
+                                msg = f"<b>Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
+                            botpm = f"\n\n<b>Hey {tag}!, I have sent your cloned links in PM.</b>\n"
+                            buttons = ButtonMaker()
+                            b_uname = bot.get_me().username
+                            botstart = f"http://t.me/{b_uname}"
+                            buttons.buildbutton("View links in PM", f"{botstart}")
+                            if PICS:
+                                sendPhoto(msg + botpm, bot, message, random.choice(PICS), InlineKeyboardMarkup(buttons.build_menu(2)))
+                            else:
+                                sendMarkup(msg + botpm, bot, message, InlineKeyboardMarkup(buttons.build_menu(2)))
+                        else:
+                            if EMOJI_THEME is True:
+                                cc = f'\n<b>╰👤 #Clone_By: </b>{tag}\n\n'
+                            else:
+                                cc = f'\n<b>╰ #Clone_By: </b>{tag}\n\n'
+                            if PICS:
+                                sendPhoto(result + cc, bot, message, random.choice(PICS), button)
+                            else:
+                                sendMarkup(result + cc, bot, message, button)       
+                        message.delete()
+                        reply_to = message.reply_to_message
+                        if reply_to is not None and AUTO_DELETE_UPLOAD_MESSAGE_DURATION == -1:
+                            reply_to.delete()
                 else:
                     update_all_messages()
             except IndexError:
@@ -224,12 +280,13 @@ def _clone(message, bot):
         if button in ["cancelled", ""]:
             sendMessage(f"{tag} {result}", bot, message)
         else:
-            if PICS:
-                msg = sendPhoto(result + cc + pmwarn + logwarn + warnmsg, bot, message, random.choice(PICS), button)
-            else:
-                msg = sendMarkup(result + cc + pmwarn + logwarn + warnmsg, bot, message, button)
             LOGGER.info(f'Cloning Done: {name}')
-            Thread(target=auto_delete_upload_message, args=(bot, message, msg)).start()
+            if FORCE_BOT_PM is False:
+                if PICS:
+                    msg = sendPhoto(result + cc + pmwarn + logwarn + warnmsg, bot, message, random.choice(PICS), button)
+                else:
+                    msg = sendMarkup(result + cc + pmwarn + logwarn + warnmsg, bot, message, button)
+                Thread(target=auto_delete_upload_message, args=(bot, message, msg)).start()
         if (is_gdtot or is_unified or is_udrive):
             gd.deletefile(link) 
 
@@ -241,7 +298,7 @@ def _clone(message, bot):
                 LOGGER.warning(e)	
         if BOT_PM and message.chat.type != 'private':	
             try:	
-                bot.sendMessage(message.from_user.id, text=result, reply_markup=button,	
+                bot.sendMessage(message.from_user.id, text=result + cc, reply_markup=button,	
                                 parse_mode=ParseMode.HTML)	
             except Exception as e:	
                 LOGGER.warning(e)	

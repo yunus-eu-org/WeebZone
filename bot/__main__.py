@@ -13,8 +13,8 @@ import requests
 import pytz
 from bot import bot, dispatcher, updater, botStartTime, TIMEZONE, IGNORE_PENDING_REQUESTS, LOGGER, Interval, INCOMPLETE_TASK_NOTIFIER, \
                     DB_URI, alive, app, main_loop, HEROKU_API_KEY, HEROKU_APP_NAME, SET_BOT_COMMANDS, AUTHORIZED_CHATS, EMOJI_THEME, \
-                    START_BTN1_NAME, START_BTN1_URL, START_BTN2_NAME, START_BTN2_URL, CREDIT_NAME, TITLE_NAME, PICS, SHOW_LIMITS_IN_STATS, LEECH_LIMIT, TORRENT_DIRECT_LIMIT, \
-                    CLONE_LIMIT, MEGA_LIMIT, ZIP_UNZIP_LIMIT, TOTAL_TASKS_LIMIT, USER_TASKS_LIMIT, FINISHED_PROGRESS_STR, UN_FINISHED_PROGRESS_STR
+                    START_BTN1_NAME, START_BTN1_URL, START_BTN2_NAME, START_BTN2_URL, CREDIT_NAME, TITLE_NAME, PICS, FINISHED_PROGRESS_STR, UN_FINISHED_PROGRESS_STR, \
+                    SHOW_LIMITS_IN_STATS, LEECH_LIMIT, TORRENT_DIRECT_LIMIT, CLONE_LIMIT, MEGA_LIMIT, ZIP_UNZIP_LIMIT, TOTAL_TASKS_LIMIT, USER_TASKS_LIMIT
 from .helper.ext_utils.fs_utils import start_cleanup, clean_all, exit_clean_up
 from .helper.ext_utils.telegraph_helper import telegraph
 from .helper.ext_utils.bot_utils import get_readable_file_size, get_readable_time
@@ -108,6 +108,7 @@ def getHerokuDetails(h_api_key, h_app_name):
         LOGGER.error(g)
         return None
 
+
 def progress_bar(percentage):
     p_used = FINISHED_PROGRESS_STR
     p_total = UN_FINISHED_PROGRESS_STR
@@ -156,32 +157,29 @@ def stats(update, context):
     mem_a = get_readable_file_size(memory.available)
     mem_u = get_readable_file_size(memory.used)
     if EMOJI_THEME is True:
-
             stats = f'<b>╭─《🌐 BOT STATISTICS 🌐》</b>\n' \
-                    f'<b>├ ⌛ Uptime: </b>{currentTime}\n'\
-                    f'<b>├ 🙄 Version: </b>{botVersion}\n'\
                     f'<b>├ 🛠 Updated On: </b>{last_commit}\n'\
+                    f'<b>├ ⌛ Uptime: </b>{currentTime}\n'\
                     f'<b>├ 🟢 OS Uptime: </b>{osUptime}\n'\
+                    f'<b>├ 🖥️ CPU:</b> [{progress_bar(cpuUsage)}] {cpuUsage}%\n'\
+                    f'<b>├ 🎮 RAM:</b> [{progress_bar(mem_p)}] {mem_p}%\n'\
                     f'<b>├ 💾 Disk:</b> [{progress_bar(disk)}] {disk}%\n'\
                     f'<b>├ 💿 Disk Free:</b> {free}\n'\
                     f'<b>├ 🔺 Upload Data:</b> {sent}\n'\
-                    f'<b>├ 🔻 Download Data:</b> {recv}\n'\
-                    f'<b>├ 🖥️ CPU:</b> [{progress_bar(cpuUsage)}] {cpuUsage}%\n'\
-                    f'<b>├ 🎮 RAM:</b> [{progress_bar(mem_p)}] {mem_p}%\n'\
-                    f'<b>╰ 💃 Free:</b> {mem_a}\n\n'
+                    f'<b>╰ 🔻 Download Data:</b> {recv}\n\n'
+
     else:
             stats = f'<b>╭─《 BOT STATISTICS 》</b>\n' \
-                    f'<b>├  Uptime: </b>{currentTime}\n'\
-                    f'<b>├  Version: </b>{botVersion}\n'\
                     f'<b>├  Updated On: </b>{last_commit}\n'\
+                    f'<b>├  Uptime: </b>{currentTime}\n'\
                     f'<b>├  OS Uptime: </b>{osUptime}\n'\
+                    f'<b>├  CPU usage:</b> [{progress_bar(cpuUsage)}] {cpuUsage}%\n'\
+                    f'<b>├  RAM:</b> [{progress_bar(mem_p)}] {mem_p}%\n'\
                     f'<b>├  Disk:</b> [{progress_bar(disk)}] {disk}%\n'\
                     f'<b>├  Disk Free:</b> {free}\n'\
                     f'<b>├  Upload Data:</b> {sent}\n'\
-                    f'<b>├  Download Data:</b> {recv}\n'\
-                    f'<b>├  CPU usage:</b> [{progress_bar(cpuUsage)}] {cpuUsage}%\n'\
-                    f'<b>├  RAM:</b> [{progress_bar(mem_p)}] {mem_p}%\n'\
-                    f'<b>╰  Free:</b> {mem_a}\n\n'
+                    f'<b>╰  Download Data:</b> {recv}\n\n'
+
 
 
     if SHOW_LIMITS_IN_STATS is True:
@@ -233,6 +231,8 @@ def stats(update, context):
                      f'<b>├  Mega: </b>{mega_limit}\n'\
                      f'<b>├  Total Tasks: </b>{total_task}\n'\
                      f'<b>╰  User Tasks: </b>{user_task}\n\n'
+
+                
 
     heroku = getHerokuDetails(HEROKU_API_KEY, HEROKU_APP_NAME)
     if heroku: stats += heroku 

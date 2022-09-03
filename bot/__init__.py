@@ -660,6 +660,11 @@ try:
 except KeyError:
     GD_INFO = 'Uploaded by WeebZone Mirror Bot'
 try:
+    DISABLE_DRIVE_LINK = getConfig('DISABLE_DRIVE_LINK')
+    DISABLE_DRIVE_LINK = DISABLE_DRIVE_LINK.lower() == 'true'
+except KeyError:
+    DISABLE_DRIVE_LINK = False
+try:
     TITLE_NAME = getConfig('TITLE_NAME')
     if len(TITLE_NAME) == 0:
         TITLE_NAME = 'WeebZone'

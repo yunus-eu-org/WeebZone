@@ -65,6 +65,7 @@ class GoogleDriveHelper:
         self.transferred_size = 0
         self.__service = self.__authorize()
 
+
     def speed(self):
         """
         It calculates the average upload speed and returns it in bytes/seconds unit
