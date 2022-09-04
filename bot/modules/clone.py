@@ -120,30 +120,6 @@ def _clone(message, bot):
         else:
             tag = reply_to.from_user.mention_html(reply_to.from_user.first_name)
     
-    mesg = message.text.split('\n')
-    message_args = mesg[0].split(' ', maxsplit=1)
-    user_id = message.from_user.id
-    tag = f"@{message.from_user.username}"
-    if EMOJI_THEME is True:
-        slmsg = f"Added by: {tag} \n👥 User ID: <code>{user_id}</code>\n\n"
-    else:
-        slmsg = f"Added by: {tag} \nUser ID: <code>{user_id}</code>\n\n"
-    if LINK_LOGS:
-            try:
-                source_link = f"<code>{message_args[1]}</code>"
-                for link_log in LINK_LOGS:
-                    bot.sendMessage(link_log, text=slmsg + source_link, parse_mode=ParseMode.HTML )
-            except IndexError:
-                pass
-            if reply_to is not None:
-                try:
-                    reply_text = reply_to.text
-                    if is_url(reply_text):
-                        source_link = f"<code>{reply_text.strip()}</code>"
-                        for link_log in LINK_LOGS:
-                            bot.sendMessage(chat_id=link_log, text=slmsg + source_link, parse_mode=ParseMode.HTML )
-                except TypeError:
-                    pass  
 
     is_gdtot = is_gdtot_link(link)
     is_unified = is_unified_link(link)
@@ -203,7 +179,7 @@ def _clone(message, bot):
                         msg = f"<b>🗂️ Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
                     else:
                         msg = f"<b>Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
-                    botpm = f"\n\n<b>Hey {tag}!, I have sent your cloned links in PM.</b>\n"
+                    botpm = f"\n<b>Hey {tag}!, I have sent your cloned links in PM.</b>\n"
                     buttons = ButtonMaker()
                     b_uname = bot.get_me().username
                     botstart = f"http://t.me/{b_uname}"
@@ -247,7 +223,7 @@ def _clone(message, bot):
                                 msg = f"<b>🗂️ Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
                             else:
                                 msg = f"<b>Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
-                            botpm = f"\n\n<b>Hey {tag}!, I have sent your cloned links in PM.</b>\n"
+                            botpm = f"\n<b>Hey {tag}!, I have sent your cloned links in PM.</b>\n"
                             buttons = ButtonMaker()
                             b_uname = bot.get_me().username
                             botstart = f"http://t.me/{b_uname}"
@@ -273,6 +249,40 @@ def _clone(message, bot):
                     update_all_messages()
             except IndexError:
                 pass
+
+        mesg = message.text.split('\n')
+        message_args = mesg[0].split(' ', maxsplit=1)
+        user_id = message.from_user.id
+        tag = f"@{message.from_user.username}"
+        if EMOJI_THEME is True:
+            slmsg = f"╭🗂️ Name: <{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
+            slmsg += f"├📐 Size: {size}\n"
+            slmsg += f"╰👥 Added by: {tag} | <code>{user_id}</code>\n\n"
+        else:
+            slmsg = f"╭ Name: <{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
+            slmsg += f"├ Size: {size}\n"
+            slmsg += f"╰ Added by: {tag} | <code>{user_id}</code>\n\n"
+        if LINK_LOGS:
+                try:
+                    upper = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
+                    source_link = f"<code>{message_args[1]}</code>\n"
+                    lower = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
+                    for link_log in LINK_LOGS:
+                        bot.sendMessage(link_log, text=slmsg + upper + source_link + lower, parse_mode=ParseMode.HTML )
+                except IndexError:
+                    pass
+                if reply_to is not None:
+                    try:
+                        reply_text = reply_to.text
+                        if is_url(reply_text):
+                            upper = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
+                            source_link = f"<code>{reply_text.strip()}</code>\n"
+                            lower = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
+                            for link_log in LINK_LOGS:
+                                bot.sendMessage(chat_id=link_log, text=slmsg + upper + source_link + lower, parse_mode=ParseMode.HTML )
+                    except TypeError:
+                        pass  
+
         if EMOJI_THEME is True:
             cc = f'\n<b>╰👤 #Clone_By: </b>{tag}\n\n'
         else:
@@ -288,7 +298,7 @@ def _clone(message, bot):
                     msg = sendMarkup(result + cc + pmwarn + logwarn + warnmsg, bot, message, button)
                 Thread(target=auto_delete_upload_message, args=(bot, message, msg)).start()
         if (is_gdtot or is_unified or is_udrive):
-            gd.deletefile(link) 
+            gd.deletefile(link)
 
         if MIRROR_LOGS:	
             try:	

@@ -235,21 +235,32 @@ class MirrorLeechListener:
         mesg = self.message.text.split('\n')
         message_args = mesg[0].split(' ', maxsplit=1)
         reply_to = self.message.reply_to_message
-        slmsg = f"Added by: {self.tag} \n👥 User ID: <code>{self.user_id}</code>\n\n"
+        if EMOJI_THEME is True:
+            slmsg = f"🗂️ Name: <{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n\n"
+            slmsg += f"📐 Size: {size}\n"
+            slmsg += f"👥 Added by: {self.tag} | <code>{self.user_id}</code>\n\n"
+        else:
+            slmsg = f"Name: <{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n\n"
+            slmsg += f"Size: {size}\n"
+            slmsg += f"Added by: {self.tag} | <code>{self.user_id}</code>\n\n"
         if LINK_LOGS:
             try:
-                source_link = f"<code>{message_args[1]}</code>"
+                upper = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
+                source_link = f"<code>{message_args[1]}</code>\n"
+                lower = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
                 for link_log in LINK_LOGS:
-                    bot.sendMessage(link_log, text=slmsg + source_link, parse_mode=ParseMode.HTML )
+                    bot.sendMessage(link_log, text=slmsg + upper + source_link + lower, parse_mode=ParseMode.HTML )
             except IndexError:
                 pass
             if reply_to is not None:
                 try:
                     reply_text = reply_to.text
                     if is_url(reply_text):
-                        source_link = f"<code>{reply_text.strip()}</code>"
+                        upper = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
+                        source_link = f"<code>{reply_text.strip()}</code>\n"
+                        lower = f"‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒\n"
                         for link_log in LINK_LOGS:
-                            bot.sendMessage(chat_id=link_log, text=slmsg + source_link, parse_mode=ParseMode.HTML )
+                            bot.sendMessage(chat_id=link_log, text=slmsg + upper + source_link + lower, parse_mode=ParseMode.HTML )
                 except TypeError:
                     pass
         if AUTO_DELETE_UPLOAD_MESSAGE_DURATION != -1:
@@ -302,7 +313,7 @@ class MirrorLeechListener:
                 msg = f"<b>🗂️ Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
             else:
                 msg = f"<b>Name: </b><{NAME_FONT}>{escape(name)}</{NAME_FONT}>\n"
-            botpm = f"<b>\n\nHey {self.tag}!, I have sent your stuff in PM.</b>\n"
+            botpm = f"<b>\nHey {self.tag}!, I have sent your stuff in PM.</b>\n"
             buttons = ButtonMaker()
             b_uname = bot.get_me().username
             botstart = f"http://t.me/{b_uname}"
